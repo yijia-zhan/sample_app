@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   before_action :signed_in_user, only: [:index, :edit, :update, :destroy]
   before_action :correct_user, only:[:edit, :update]
   before_action :admin_user, only: :destroy
+  before_action :non_signed_in_user, only: [:create, :new]
 
   def new
     @user = User.new
@@ -49,7 +50,7 @@ class UsersController < ApplicationController
 
   private
     def user_params
-      params.require(:user).permit(:name, :email, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :password, :password_confirmation, :admin)
     end
 
     # Before filters
@@ -67,6 +68,12 @@ class UsersController < ApplicationController
 
     def admin_user
       redirect_to(root_url) unless current_user.admin?
+    end
+
+    def non_signed_in_user
+      if signed_in?
+        redirect_to(root_url)
+      end
     end
 
 end
